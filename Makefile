@@ -1,6 +1,3 @@
-# Simple Makefile for a Go project
-
-# Build the application
 all: build test
 
 build:
@@ -12,6 +9,7 @@ build:
 # Run the application
 run:
 	@go run cmd/api/main.go
+
 # Create DB container
 docker-run:
 	@if docker compose up --build 2>/dev/null; then \
@@ -34,6 +32,7 @@ docker-down:
 test:
 	@echo "Testing..."
 	@go test ./... -v
+
 # Integrations Tests for the application
 itest:
 	@echo "Running integration tests..."
