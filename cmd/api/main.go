@@ -12,6 +12,25 @@ import (
 	"device-api/internal/server"
 )
 
+// @title           Device API
+// @version         1.0
+// @description     A RESTful API built with Go for managing device resources.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:8080
+// @BasePath  /
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name X-API-Key
+
 func gracefulShutdown(apiServer *http.Server, done chan bool) {
 	// Create context that listens for the interrupt signal from the OS.
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)

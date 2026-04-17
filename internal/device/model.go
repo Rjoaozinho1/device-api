@@ -22,12 +22,13 @@ func (s State) Valid() bool {
 	return false
 }
 
+// Device represents a device in the system
 type Device struct {
-	ID           string    `json:"id"`
-	Name         string    `json:"name"`
-	Brand        string    `json:"brand"`
-	State        State     `json:"state"`
-	CreationTime time.Time `json:"creation_time"`
+	ID           string    `json:"id" example:"550e8400-e29b-41d4-a716-446655440000"`
+	Name         string    `json:"name" example:"iPhone 15 Pro"`
+	Brand        string    `json:"brand" example:"Apple"`
+	State        State     `json:"state" enums:"available,in-use,inactive" example:"available"`
+	CreationTime time.Time `json:"creation_time" example:"2026-01-15T10:30:00Z"`
 }
 
 func fromDB(row devicedb.Device) Device {

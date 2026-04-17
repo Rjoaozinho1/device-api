@@ -6,6 +6,10 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+
+	_ "device-api/docs" // Ignore unused import error for docs
 	"device-api/internal/device"
 	devicedb "device-api/internal/device/device_repository"
 	"device-api/internal/middleware"
@@ -13,6 +17,9 @@ import (
 
 func (s *Server) RegisterRoutes() http.Handler {
 	r := gin.Default()
+
+	// Swagger documentation route
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173", "*"},

@@ -1,0 +1,291 @@
+basePath: /
+definitions:
+  internal_device.Device:
+    properties:
+      brand:
+        example: Apple
+        type: string
+      creation_time:
+        example: "2026-01-15T10:30:00Z"
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      name:
+        example: iPhone 15 Pro
+        type: string
+      state:
+        allOf:
+        - $ref: '#/definitions/internal_device.State'
+        enum:
+        - available
+        - in-use
+        - inactive
+        example: available
+    type: object
+  internal_device.State:
+    enum:
+    - available
+    - in-use
+    - inactive
+    type: string
+    x-enum-varnames:
+    - StateAvailable
+    - StateInUse
+    - StateInactive
+  internal_device.createRequest:
+    properties:
+      brand:
+        example: Apple
+        type: string
+      name:
+        example: iPhone 15 Pro
+        type: string
+      state:
+        allOf:
+        - $ref: '#/definitions/internal_device.State'
+        enum:
+        - available
+        - in-use
+        - inactive
+        example: available
+    required:
+    - brand
+    - name
+    type: object
+  internal_device.patchRequest:
+    properties:
+      brand:
+        example: Apple Inc.
+        type: string
+      name:
+        example: iPhone 15 Pro Max
+        type: string
+      state:
+        allOf:
+        - $ref: '#/definitions/internal_device.State'
+        enum:
+        - available
+        - in-use
+        - inactive
+        example: in-use
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: A RESTful API built with Go for managing device resources.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Device API
+  version: "1.0"
+paths:
+  /api/v1/devices:
+    get:
+      description: Retrieves a list of devices, optionally filtered by brand and/or
+        state
+      parameters:
+      - description: Filter by exact brand name
+        in: query
+        name: brand
+        type: string
+      - description: Filter by state (available, in-use, inactive)
+        in: query
+        name: state
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_device.Device'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: List devices
+      tags:
+      - devices
+    post:
+      consumes:
+      - application/json
+      description: Creates a new device with the given properties
+      parameters:
+      - description: Device creation data
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/internal_device.createRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_device.Device'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Create a device
+      tags:
+      - devices
+  /api/v1/devices/{id}:
+    delete:
+      description: Deletes a device by its ID (only if not in-use)
+      parameters:
+      - description: Device ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a device
+      tags:
+      - devices
+    get:
+      description: Retrieves a single device by its ID
+      parameters:
+      - description: Device ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_device.Device'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Get a device
+      tags:
+      - devices
+    patch:
+      consumes:
+      - application/json
+      description: Updates only the provided fields of a device
+      parameters:
+      - description: Device ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Device partial data
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/internal_device.patchRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_device.Device'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Partially update a device
+      tags:
+      - devices
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: X-API-Key
+    type: apiKey
+swagger: "2.0"

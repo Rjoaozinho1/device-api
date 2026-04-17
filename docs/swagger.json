@@ -1,0 +1,443 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "A RESTful API built with Go for managing device resources.",
+        "title": "Device API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.swagger.io/support",
+            "email": "support@swagger.io"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/api/v1/devices": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieves a list of devices, optionally filtered by brand and/or state",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "devices"
+                ],
+                "summary": "List devices",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter by exact brand name",
+                        "name": "brand",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by state (available, in-use, inactive)",
+                        "name": "state",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/internal_device.Device"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Creates a new device with the given properties",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "devices"
+                ],
+                "summary": "Create a device",
+                "parameters": [
+                    {
+                        "description": "Device creation data",
+                        "name": "device",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_device.createRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/internal_device.Device"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/devices/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieves a single device by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "devices"
+                ],
+                "summary": "Get a device",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Device ID (UUID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_device.Device"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Deletes a device by its ID (only if not in-use)",
+                "tags": [
+                    "devices"
+                ],
+                "summary": "Delete a device",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Device ID (UUID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates only the provided fields of a device",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "devices"
+                ],
+                "summary": "Partially update a device",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Device ID (UUID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Device partial data",
+                        "name": "device",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_device.patchRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_device.Device"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "internal_device.Device": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "type": "string",
+                    "example": "Apple"
+                },
+                "creation_time": {
+                    "type": "string",
+                    "example": "2026-01-15T10:30:00Z"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "iPhone 15 Pro"
+                },
+                "state": {
+                    "enum": [
+                        "available",
+                        "in-use",
+                        "inactive"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/internal_device.State"
+                        }
+                    ],
+                    "example": "available"
+                }
+            }
+        },
+        "internal_device.State": {
+            "type": "string",
+            "enum": [
+                "available",
+                "in-use",
+                "inactive"
+            ],
+            "x-enum-varnames": [
+                "StateAvailable",
+                "StateInUse",
+                "StateInactive"
+            ]
+        },
+        "internal_device.createRequest": {
+            "type": "object",
+            "required": [
+                "brand",
+                "name"
+            ],
+            "properties": {
+                "brand": {
+                    "type": "string",
+                    "example": "Apple"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "iPhone 15 Pro"
+                },
+                "state": {
+                    "enum": [
+                        "available",
+                        "in-use",
+                        "inactive"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/internal_device.State"
+                        }
+                    ],
+                    "example": "available"
+                }
+            }
+        },
+        "internal_device.patchRequest": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "type": "string",
+                    "example": "Apple Inc."
+                },
+                "name": {
+                    "type": "string",
+                    "example": "iPhone 15 Pro Max"
+                },
+                "state": {
+                    "enum": [
+                        "available",
+                        "in-use",
+                        "inactive"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/internal_device.State"
+                        }
+                    ],
+                    "example": "in-use"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "X-API-Key",
+            "in": "header"
+        }
+    }
+}
