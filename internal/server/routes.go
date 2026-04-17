@@ -8,6 +8,7 @@ import (
 
 	"device-api/internal/device"
 	devicedb "device-api/internal/device/device_repository"
+	"device-api/internal/middleware"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
@@ -16,7 +17,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173", "*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
-		AllowHeaders:     []string{"Accept", "Authorization", "Content-Type"},
+		AllowHeaders:     []string{"Accept", "Authorization", "Content-Type", "X-API-Key"},
 		AllowCredentials: true,
 	}))
 
@@ -27,6 +28,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	deviceHandler := device.NewHandler(device.NewService(queries))
 
 	v1 := r.Group("/api/v1")
+	v1.Use(middleware.APIKeyAuth())
 	deviceHandler.Register(v1)
 
 	return r
