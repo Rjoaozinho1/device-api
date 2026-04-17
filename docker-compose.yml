@@ -1,4 +1,16 @@
 services:
+  api:
+    build: .
+    ports:
+      - "${PORT:-8080}:8080"
+    env_file:
+      - .env
+    depends_on:
+      psql_bp:
+        condition: service_started
+    environment:
+      - DB_HOST=psql_bp
+
   psql_bp:
     image: postgres:latest
     restart: unless-stopped
