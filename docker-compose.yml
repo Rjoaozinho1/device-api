@@ -1,18 +1,18 @@
 services:
-  api:
+  device_api:
     build: .
     ports:
       - "${PORT:-8080}:8080"
     env_file:
       - .env
     depends_on:
-      psql_bp:
-        condition: service_started
+      device_database:
+        condition: service_healthy
     environment:
-      - DB_HOST=psql_bp
+      - DB_HOST=device_database
 
-  psql_bp:
-    image: postgres:latest
+  device_database:
+    image: postgres:17
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_DATABASE}
@@ -21,7 +21,13 @@ services:
     ports:
       - "${DB_PORT}:5432"
     volumes:
-      - psql_volume_bp:/var/lib/postgresql/data
+      - device_database_volume:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
 volumes:
-  psql_volume_bp:
+  device_database_volume:
