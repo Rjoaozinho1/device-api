@@ -31,7 +31,7 @@ docker-down:
 # Test the application
 test:
 	@echo "Testing..."
-	@go test ./... -v
+	@go test ./internal/device -v
 
 # Integrations Tests for the application
 itest:

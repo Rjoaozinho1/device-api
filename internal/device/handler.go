@@ -1,17 +1,26 @@
 package device
 
 import (
+	"context"
 	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-type Handler struct {
-	svc *Service
+type ServiceInterface interface {
+	Create(ctx context.Context, in CreateInput) (*Device, error)
+	Get(ctx context.Context, id string) (*Device, error)
+	List(ctx context.Context, brand string, state State) ([]Device, error)
+	Patch(ctx context.Context, id string, in PatchInput) (*Device, error)
+	Delete(ctx context.Context, id string) error
 }
 
-func NewHandler(svc *Service) *Handler {
+type Handler struct {
+	svc ServiceInterface
+}
+
+func NewHandler(svc ServiceInterface) *Handler {
 	return &Handler{svc: svc}
 }
 
