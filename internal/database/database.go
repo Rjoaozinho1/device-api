@@ -18,12 +18,13 @@ import (
 // Service represents a service that interacts with a database.
 type Service interface {
 	// Health returns a map of health status information.
-	// The keys and values in the map are service-specific.
 	Health() map[string]string
 
 	// Close terminates the database connection.
-	// It returns an error if the connection cannot be closed.
 	Close() error
+
+	// DB returns the underlying *sql.DB for use by data-access layers
+	DB() *sql.DB
 }
 
 type service struct {
@@ -137,4 +138,8 @@ func (s *service) Health() map[string]string {
 func (s *service) Close() error {
 	log.Printf("Disconnected from database: %s", database)
 	return s.db.Close()
+}
+
+func (s *service) DB() *sql.DB {
+	return s.db
 }
