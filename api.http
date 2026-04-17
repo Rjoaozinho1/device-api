@@ -1,0 +1,200 @@
+### ──────────────────────────────────────────────
+### Device API — HTTP Test File
+### Base URL: http://localhost:8080
+### ──────────────────────────────────────────────
+
+@baseUrl = http://localhost:8080
+@apiUrl  = {{baseUrl}}/api/v1
+@deviceId = ba5a5ae1-6d08-4830-b7c6-dd6899dc0414
+
+### ──────────────────────────────────────────────
+### Root & Health
+### ──────────────────────────────────────────────
+
+### Hello World
+GET {{baseUrl}}/
+
+###
+
+### Health Check
+GET {{baseUrl}}/health
+
+### ──────────────────────────────────────────────
+### Devices — CRUD
+### ──────────────────────────────────────────────
+
+### Create Device (available — default state)
+POST {{apiUrl}}/devices
+Content-Type: application/json
+
+{
+  "name": "iPhone 15 Pro",
+  "brand": "Apple"
+}
+
+###
+
+### Create Device (explicit state)
+POST {{apiUrl}}/devices
+Content-Type: application/json
+
+{
+  "name": "Galaxy S24 Ultra V2",
+  "brand": "Samsung V2",
+  "state": "inactive"
+}
+
+###
+
+### Create Device (in-use state)
+POST {{apiUrl}}/devices
+Content-Type: application/json
+
+{
+  "name": "Pixel 9",
+  "brand": "Google",
+  "state": "in-use"
+}
+
+###
+
+### Create Device (inactive state)
+POST {{apiUrl}}/devices
+Content-Type: application/json
+
+{
+  "name": "OnePlus 12",
+  "brand": "OnePlus",
+  "state": "inactive"
+}
+
+###
+
+### Get Device by ID
+GET {{apiUrl}}/devices/{{deviceId}}
+
+###
+
+### List All Devices
+GET {{apiUrl}}/devices
+
+###
+
+### List Devices — filter by brand
+GET {{apiUrl}}/devices?brand=Apple
+
+###
+
+### List Devices — filter by state
+GET {{apiUrl}}/devices?state=in-use
+
+###
+
+### List Devices — filter by brand and state
+GET {{apiUrl}}/devices?brand=Samsung&state=available
+
+###
+
+### Patch Device — update name only
+PATCH {{apiUrl}}/devices/{{deviceId}}
+Content-Type: application/json
+
+{
+  "name": "iPhone 15 Pro Max"
+}
+
+###
+
+### Patch Device — update brand only
+PATCH {{apiUrl}}/devices/{{deviceId}}
+Content-Type: application/json
+
+{
+  "brand": "Apple Inc."
+}
+
+###
+
+### Patch Device — update state only
+PATCH {{apiUrl}}/devices/{{deviceId}}
+Content-Type: application/json
+
+{
+  "state": "in-use"
+}
+
+###
+
+### Patch Device — update multiple fields
+PATCH {{apiUrl}}/devices/{{deviceId}}
+Content-Type: application/json
+
+{
+  "name": "Galaxy S24",
+  "brand": "Samsung",
+  "state": "inactive"
+}
+
+###
+
+### Delete Device
+DELETE {{apiUrl}}/devices/{{deviceId}}
+
+### ──────────────────────────────────────────────
+### Error Cases
+### ──────────────────────────────────────────────
+
+### Create Device — missing required fields (expects 400)
+POST {{apiUrl}}/devices
+Content-Type: application/json
+
+{
+  "name": "Incomplete Device"
+}
+
+###
+
+### Create Device — invalid state (expects 400)
+POST {{apiUrl}}/devices
+Content-Type: application/json
+
+{
+  "name": "Bad State Device",
+  "brand": "Test",
+  "state": "broken"
+}
+
+###
+
+### Get Device — not found (expects 404)
+GET {{apiUrl}}/devices/00000000-0000-0000-0000-000000000000
+
+###
+
+### Get Device — invalid ID format (expects 400)
+GET {{apiUrl}}/devices/not-a-uuid
+
+###
+
+### Delete Device — not found (expects 404)
+DELETE {{apiUrl}}/devices/00000000-0000-0000-0000-000000000000
+
+###
+
+### Patch Device — invalid state (expects 400)
+PATCH {{apiUrl}}/devices/{{deviceId}}
+Content-Type: application/json
+
+{
+  "state": "destroyed"
+}
+
+###
+
+### Patch Device — empty name (expects 400)
+PATCH {{apiUrl}}/devices/{{deviceId}}
+Content-Type: application/json
+
+{
+  "name": ""
+}
